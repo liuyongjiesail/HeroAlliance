@@ -26,7 +26,7 @@
     RootTabBarViewController *rootTVC = [[RootTabBarViewController alloc] init];
     self.window.rootViewController = rootTVC;
 
-    [[UINavigationBar appearance] setBarTintColor:[UIColor blackColor]];
+    [[UINavigationBar appearance] setBarTintColor:[UIColor grayColor]];
 //    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"2"] forBarMetrics:UIBarMetricsDefault];
 //    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     

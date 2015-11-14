@@ -15,6 +15,8 @@
 #import "InfoDetailViewController.h"
 #import "RecommendView.h"
 #import "TimeHandle.h"
+#import <MJRefresh.h>
+#import <MJRefreshHeader.h>
 
 #define kWidth (self.iv.bounds.size.width - 50) / 5
 
@@ -34,6 +36,9 @@
 @property (strong, nonatomic) UIButton *saveButton;
 
 @property (strong, nonatomic) UIImageView *placeholderImageView;
+
+//用于存储目前取到的tableView
+@property (strong, nonatomic) UITableView *tableView;
 
 @end
 
@@ -60,9 +65,11 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"iconfont-next-2"] style:UIBarButtonItemStyleDone target:self action:@selector(rightBarButtonItemAction:)];
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     
+    self.iv.infoTableView.frame = CGRectMake(self.iv.allScrollView.contentOffset.x / self.iv.allScrollView.bounds.size.width, 64,  self.iv.allScrollView.bounds.size.width, self.iv.allScrollView.bounds.size.height - 113);
     [self.iv.infoTableView registerClass:[InfoTableViewCell class] forCellReuseIdentifier:@"cell"];
     self.iv.infoTableView.delegate = self;
     self.iv.infoTableView.dataSource = self;
+    
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishAction) name:@"finishData" object:nil];
     
@@ -78,6 +85,8 @@
     
     //资讯导航条
     [self p_setupHeadTitle];
+    
+    
     
     // Do any additional setup after loading the view.
 }
@@ -120,14 +129,8 @@
     }
     
     self.saveButton = (UIButton *)[self.headTitleSV viewWithTag:100];
-    self.iv.infoTableView.frame = CGRectMake(0, 64, self.iv.allScrollView.bounds.size.width, self.iv.allScrollView.bounds.size.height);
-
-//    [self.iv.allScrollView addSubview:self.recommendView];
-//    [self.saveButton setTitleColor:[UIColor yellowColor] forState:UIControlStateSelected];
+    self.iv.infoTableView.frame = CGRectMake(0, 0, self.iv.allScrollView.bounds.size.width, self.iv.allScrollView.bounds.size.height);
     
-    
-    
-//    self.saveButton.titleLabel.font = [UIFont systemFontOfSize:22];
     self.saveButton.selected = YES;
 
 }
@@ -136,6 +139,8 @@
 - (void)buttonAction:(UIButton *)sender
 {
     self.saveButton.tintColor = [UIColor yellowColor];
+    NSDictionary *dict = [NSDictionary dictionaryWithObject: @(sender.tag) forKey:@"number"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"sender" object:nil userInfo:dict];
     
     if (self.saveButton != sender) {
     
@@ -144,16 +149,13 @@
         self.saveButton.selected = ! self.saveButton.selected;
         self.saveButton = sender;
         [self.saveButton setTitleColor:[UIColor yellowColor] forState:UIControlStateNormal];
+        sender.selected = YES;
         
         //通过tag值来确定tableView间的转换
-
-            
+        
         self.iv.allScrollView.contentOffset = CGPointMake((sender.tag - 100) * self.iv.allScrollView.bounds.size.width, 0);
         self.iv.infoTableView.frame = CGRectMake((sender.tag - 100) * self.iv.allScrollView.bounds.size.width, 64, self.iv.allScrollView.bounds.size.width, self.iv.allScrollView.bounds.size.height - 113);
-        
-
-        NSDictionary *dict = [NSDictionary dictionaryWithObject: @(sender.tag) forKey:@"number"];
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"sender" object:nil userInfo:dict];
+    
         if(sender.tag == 107) {
             
             self.navigationController.navigationBar.tintColor = [UIColor grayColor];
@@ -189,6 +191,7 @@
     cell.detalLabel.text = info.summary;
     
     cell.timeLabel.text = [[TimeHandle sharedTimeHandle] IntervalWithString:info.publication_date];
+    
     [cell.myImageView sd_setImageWithURL:[NSURL URLWithString:info.image_url_small] placeholderImage:[UIImage imageNamed:@""]];
     if ([info.image_with_btn isEqualToString:@"True"]) {
         
@@ -219,21 +222,49 @@
 
 #pragma mark -- UIScrollViewDelegate
 
-/*
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+//    self.iv.allScrollView.delegate != self;
+//    NSLog(@"正在滚动");
+     self.iv.allScrollView.scrollEnabled = YES;
+    self.iv.allScrollView.directionalLockEnabled = YES;
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    self.iv.allScrollView.scrollEnabled = NO;
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    self.iv.allScrollView.scrollEnabled = YES;
+
+}
+
+
+
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     
     CGFloat myFloat = scrollView.contentOffset.x;
     
-    NSInteger index = myFloat / self.view.frame.size.width;
+    CGFloat index = myFloat / self.view.frame.size.width;
     
-    UIButton *button = (UIButton *)[self.iv viewWithTag:index + 100];
+    NSLog(@"%f", index);
     
-    [self buttonAction:button];
+    self.button = (UIButton *)[self.headTitleSV viewWithTag:index + 100];
+    
+    [self buttonAction:self.button];
 
 }
-*/
 
+
+#pragma mark -- MJRefreshDelegate
+
+- (void)refreshingAction:(MJRefreshHeader *)sender
+{
+    NSLog(@"123");
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

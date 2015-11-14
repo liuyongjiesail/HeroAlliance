@@ -32,22 +32,31 @@
 //    self.allScrollView.backgroundColor = [UIColor redColor];
     [self addSubview:self.allScrollView];
     self.allScrollView.bounces = NO;
-
+    
+    
 //    self.allScrollView.showsHorizontalScrollIndicator = NO;
-    self.allScrollView.directionalLockEnabled = YES;
+//    self.allScrollView.directionalLockEnabled = YES;
     
     self.allScrollView.contentSize = CGSizeMake(kWidth * 8, kHeight);
     self.allScrollView.pagingEnabled = YES;
+//    self.allScrollView.tag = 10000;
     
-    NSLog(@"%f", kWidth);
+//    self.infoTableView = [[UITableView alloc] initWithFrame:CGRectMake(0,0 , kWidth, kHeight) style:UITableViewStylePlain];
+//    [self.allScrollView addSubview:self.infoTableView];
+    
+    NSLog(@"%f", kHeight);
     
     int count = 1000;
     
     for (int i = 0; i < 8; i++) {
         
-        self.infoTableView = [[UITableView alloc] initWithFrame:CGRectMake(kWidth * i, 64, kWidth, kHeight) style:UITableViewStylePlain];
+        self.infoTableView = [[UITableView alloc] initWithFrame:CGRectMake(kWidth * i, 0, kWidth, kHeight) style:UITableViewStylePlain];
         self.infoTableView.tag = count++;
+//        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(kWidth * i, 0, kWidth, kHeight)];
+//        [view addSubview:self.infoTableView];
+        
         [self.allScrollView addSubview:self.infoTableView];
+        _infoTableView.tableFooterView = [[UIView alloc]init];
     }
     
 //    UITableView *tableView = (UITableView *)[self.allScrollView viewWithTag:1000];

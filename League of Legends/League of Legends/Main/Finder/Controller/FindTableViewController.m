@@ -11,6 +11,8 @@
 #import <UIImageView+WebCache.h>
 #import "FindDetailViewController.h"
 #import "FindHeadView.h"
+#import "FindListCell.h"
+#import "GoodsDataHandle.h"
 
 @interface FindTableViewController ()
 
@@ -30,7 +32,7 @@
     UIColor * color = [UIColor yellowColor];
     NSDictionary * dict = [NSDictionary dictionaryWithObject:color forKey:NSForegroundColorAttributeName];
     self.navigationController.navigationBar.titleTextAttributes = dict;
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
+    [self.tableView registerClass:[FindListCell class] forCellReuseIdentifier:@"cell"];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishData) name:@"finishData" object:nil];
     
@@ -69,12 +71,12 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
+    FindListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     FindListModel *model = [FindListDataHandle sharedFindListModel].listDataArray[indexPath.section][indexPath.row];
-    [cell.imageView sd_setImageWithURL:[NSURL URLWithString:model.image_url_big]];
+    [cell.myImageView sd_setImageWithURL:[NSURL URLWithString:model.image_url_big]];
 
-    cell.textLabel.text = model.title;
+    cell.titleLable.text = model.title;
     
     
     //******************在这里更新tableView的headView***********************
@@ -131,6 +133,8 @@
     FindListModel *model = self.dataArray[sender.tag - 100];
     
     findDVC.listModel = model;
+    
+//    [GoodsDataHandle sharedGoodsData].listModel = model;
 
     [self showViewController:findDVC sender:nil];
 

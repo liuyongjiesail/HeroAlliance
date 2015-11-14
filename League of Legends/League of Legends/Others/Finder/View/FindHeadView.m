@@ -33,7 +33,7 @@
     [self addSubview:self.myButton];
     
     self.myImageView = [[UIImageView alloc] init];
-    self.myImageView.frame = CGRectMake(kWidth / 4, kWidth / 15, kWidth / 2, kHeight / 2.5);
+    self.myImageView.frame = CGRectMake(kWidth / 3, kWidth / 10, kWidth / 3, kHeight / 2.5);
 //    self.myImageView.backgroundColor = [UIColor blueColor];
     [self.myButton addSubview:self.myImageView];
     

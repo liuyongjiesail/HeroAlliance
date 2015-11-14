@@ -7,7 +7,7 @@
 //
 
 #import "InfoDataHandle.h"
-#import <AFNetworking.h>
+#import "AFNetworking.h"
 
 
 @interface InfoDataHandle ()
@@ -114,7 +114,10 @@
 }
 - (InfoModel *)modelWithIndex:(NSInteger)index
 {
-    return self.dataArray[index];
+    if (self.dataArray != nil) {
+        return self.dataArray[index];
+    }
+    return NULL;
 }
 
 @end
