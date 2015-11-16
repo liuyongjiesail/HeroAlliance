@@ -14,5 +14,7 @@
 @property (strong, nonatomic) UIImageView *headImageView;
 @property (strong, nonatomic) UILabel *Headlabel;
 @property (strong, nonatomic) UIPageControl *pageControl;
+@property (strong, nonatomic) NSTimer * timer;
+
 
 @end

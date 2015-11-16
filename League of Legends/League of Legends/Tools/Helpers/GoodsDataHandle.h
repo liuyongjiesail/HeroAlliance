@@ -15,6 +15,8 @@
 
 @property (strong, nonatomic) NSMutableArray *dataArray;
 
+@property (strong, nonatomic) NSMutableArray *propsArray;
+
 @property (strong, nonatomic) FindListModel *listModel;
 
 + (instancetype)sharedGoodsData;

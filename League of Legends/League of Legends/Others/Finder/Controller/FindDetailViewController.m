@@ -14,9 +14,9 @@
 #import "AFHTTPRequestOperation.h"
 #import "GoodsCollectionCell.h"
 #import "GoodsDataHandle.h"
+#import "GoodsDetailViewController.h"
 
 static int count = 0;
-static int count2 = 0;
 
 @interface FindDetailViewController ()<UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UISearchControllerDelegate, UISearchResultsUpdating>
 
@@ -26,6 +26,7 @@ static int count2 = 0;
 @property (strong, nonatomic) UIView *collectionView;
 @property (strong, nonatomic) NSMutableArray *searchlistArray;
 @property (strong, nonatomic) UISearchController *searchController;
+@property (strong, nonatomic) UIButton *saveButton;
 
 //主界面layout
 @property (strong, nonatomic) UICollectionViewFlowLayout *flowLayout;
@@ -40,6 +41,8 @@ static int count2 = 0;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+
     
     FindListModel *listModel = self.listModel;
     
@@ -75,6 +78,7 @@ static int count2 = 0;
             button1.layer.borderWidth = 0.5;
             button1.layer.borderColor = [UIColor grayColor].CGColor;
             button1.selected = NO;
+            button1.tag = 100001;
             [view1 addSubview:button1];
             
             UIButton *button2 = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -85,6 +89,7 @@ static int count2 = 0;
             button2.titleLabel.textAlignment = NSTextAlignmentRight;
             button2.tintColor = [UIColor blackColor];
             button2.layer.borderWidth = 0.5;
+            button2.tag = 100002;
             button2.layer.borderColor = [UIColor grayColor].CGColor;
             [view1 addSubview:button2];
             
@@ -112,6 +117,7 @@ static int count2 = 0;
             
             self.buttonView.backgroundColor = [UIColor redColor];
             self.buttonView.alpha = 0.7;
+            
             
         } else if ([listModel.title isEqualToString:@"英雄资料"]){
             
@@ -154,6 +160,7 @@ static int count2 = 0;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"iconfont-prev"] style:UIBarButtonItemStyleDone target:self action:@selector(rightBarButtonItemAction:)];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishAction)  name:@"finishData" object:nil];
+    self.collectionView = [[UIView alloc] initWithFrame:CGRectMake(0, 158, self.view.frame.size.width, self.view.frame.size.height - 158)];
     
     // Do any additional setup after loading the view.
 }
@@ -250,6 +257,8 @@ static int count2 = 0;
     [self.goodListCollection reloadData];
     NSLog(@"物品资料已更新");
 }
+
+#pragma mark -- 两个button弹出相应View
 - (void)button1Action:(UIButton *)sender
 {
     count ++;
@@ -258,16 +267,20 @@ static int count2 = 0;
         //button点击出现view
         
         self.buttonView = [[UIView alloc] initWithFrame:CGRectMake(0, 148, self.view.frame.size.width, 90)];
-        self.buttonView.backgroundColor = [UIColor redColor];
-
+        self.buttonView.backgroundColor = [UIColor grayColor];
+        self.buttonView.layer.borderColor = [UIColor whiteColor].CGColor;
+//        self.buttonView.
         int count = 10000;
         for (int i = 0; i < 2; i++) {
             
             for (int j = 0; j < 3; j++) {
                 
-                UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+                UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
                 button.frame = CGRectMake(10 + (10 + (self.view.bounds.size.width - 40) / 3) * j, 10 + (10 + 30) * i, (self.view.bounds.size.width - 40)/ 3, 30);
-                button.backgroundColor = [UIColor greenColor];
+                button.backgroundColor = [UIColor whiteColor];
+                button.layer.cornerRadius = 5;
+                button.layer.borderWidth = 0.5;
+                button.layer.borderColor = [UIColor blackColor].CGColor;
                 button.tag = count ++;
                 [self.buttonView addSubview:button];
             }
@@ -291,22 +304,47 @@ static int count2 = 0;
     if (count % 2 != 0) {
         
         self.buttonView = [[UIView alloc] initWithFrame:CGRectMake(0, 148, self.view.frame.size.width, 210)];
-        self.buttonView.backgroundColor = [UIColor redColor];
+        self.buttonView.backgroundColor = [UIColor grayColor];
+//        self.buttonView.alpha = 0.5;
+        NSMutableArray *propsArray = [GoodsDataHandle sharedGoodsData].propsArray;
+//        NSLog(@"=====%@", [GoodsDataHandle sharedGoodsData].propsArray);
         int count = 20000;
         for (int i = 0; i < 5; i++) {
             
-            for (int j = 0; j < 3; j++) {
+            for (int j = 0; j < 4; j++) {
                 
                 UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-                button.frame = CGRectMake(10 + (10 + (self.view.bounds.size.width - 40) / 3) * j, 10 + (10 + 30) * i, (self.view.bounds.size.width - 40)/ 3, 30);
-                button.backgroundColor = [UIColor greenColor];
+                button.frame = CGRectMake(10 + (10 + (self.view.bounds.size.width - 50) / 4) * j, 10 + (10 + 30) * i, (self.view.bounds.size.width - 50)/ 4, 30);
+                button.backgroundColor = [UIColor whiteColor];
+                button.layer.cornerRadius = 5;
+                button.layer.borderWidth = 0.5;
+                button.layer.borderColor = [UIColor blackColor].CGColor;
+                [button setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
+                [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
                 button.tag = count ++;
+                [button addTarget:self action:@selector(propsAction:) forControlEvents:UIControlEventTouchUpInside];
                 [self.buttonView addSubview:button];
             }
             
         }
         
+        for (int i = 0; i < propsArray.count; i++) {
+            
+            UIButton *button = (UIButton *) [self.buttonView viewWithTag:(20001 + i)];
+            
+            [button setTitle:propsArray[i] forState:UIControlStateNormal];
+        }
+        
+            
+        self.saveButton = (UIButton *)[self.buttonView viewWithTag:20000];
+        
+        [self.saveButton setTitle:@"全部物品" forState:UIControlStateNormal];
+        
+//        self.saveButton.selected = YES;
+
         [self.view addSubview:self.buttonView];
+//        NSLog(@"%@", sender.titleLabel.text);
+        
         
     }else {
         
@@ -330,8 +368,6 @@ static int count2 = 0;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    NSLog(@"%@", self.searchlistArray);
-    
     GoodsCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
     
     if (!self.searchController.active) {
@@ -343,6 +379,7 @@ static int count2 = 0;
         cell.myImageView.image = [UIImage imageWithContentsOfFile:imagePath];
         cell.goodsName.text = model.name;
         return cell;
+        
     } else {
         
         //在这里不能循环打印，否则会导致数据输出一样，这里必须根据item数值来输出数据
@@ -351,7 +388,6 @@ static int count2 = 0;
         cell.myImageView.backgroundColor = [UIColor redColor];
         cell.myImageView.image = [UIImage imageWithContentsOfFile:imagePath];
         cell.goodsName.text = model.name;
-        //            NSLog(@"%@", model);
         return cell;
 
     }
@@ -361,6 +397,12 @@ static int count2 = 0;
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    GoodsDetailViewController *goodDetailVC = [[GoodsDetailViewController alloc] init];
+    
+    GoodsModel *model = [[GoodsDataHandle sharedGoodsData] modelWithIndexPath:indexPath.item];
+    
+    [self showViewController:goodDetailVC sender:nil];
+    
     NSLog(@"%ld", indexPath.item);
 }
 
@@ -377,15 +419,30 @@ static int count2 = 0;
 
         if ([model.name containsString:str]) {
             
-            NSLog(@"%@", model.name);
-
             [self.searchlistArray addObject:model];
-
         }
-
     }
 
     [self.goodListCollection reloadData];
+}
+
+#pragma mark --- 装备属性按钮点击并更新collectionView
+- (void)propsAction:(UIButton *)sender
+{
+    NSLog(@"%@", sender.titleLabel.text);
+    
+    if (self.saveButton != sender) {
+        
+        self.saveButton.selected = !self.saveButton.selected;
+        sender.selected = !sender.selected;
+        self.saveButton = sender;
+        UIButton *button = (UIButton*)[self.view viewWithTag:100002];
+        [button setTitle:sender.titleLabel.text forState:UIControlStateNormal];
+
+//        [self.buttonView removeFromSuperview];
+        [self button2Action:sender];
+//        count ++;
+    }
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event

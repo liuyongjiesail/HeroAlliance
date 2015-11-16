@@ -8,8 +8,11 @@
 
 #import "AppDelegate.h"
 #import "RootTabBarViewController.h"
+#import <BaiduMapAPI_Map/BMKMapView.h>
 
 @interface AppDelegate ()
+
+@property (strong, nonatomic) BMKMapManager *mapManager;
 
 @end
 
@@ -32,6 +35,13 @@
     
 //    [UIViewController preferredStatusBarStyle];
     [self preferredStatusBarStyle];
+    
+    _mapManager = [[BMKMapManager alloc]init];
+    // 如果要关注网络及授权验证事件，请设定     generalDelegate参数
+    BOOL ret = [_mapManager start:@"DFPmikEA83Tuubw7A9AxgZjZ"  generalDelegate:nil];
+    if (!ret) {
+        NSLog(@"manager start failed!");
+    }
     
     return YES;
 }

@@ -114,9 +114,9 @@
 }
 - (InfoModel *)modelWithIndex:(NSInteger)index
 {
-    if (self.dataArray != nil) {
+//    if (self.dataArray != nil) {
         return self.dataArray[index];
-    }
+//    }
     return NULL;
 }
 

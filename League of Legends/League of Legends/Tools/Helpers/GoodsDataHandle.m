@@ -42,12 +42,14 @@
 {
     self.dataArray = [NSMutableArray array];
     
-    
+    self.propsArray = [NSMutableArray array];
     
     NSString *urlString = @"http://ossweb-img.qq.com/upload/qqtalk/lol_hero/goods_list.js";
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
     [manager GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+        
+        self.propsArray = responseObject[@"props"];
         
         for (NSDictionary *dict in responseObject[@"items"]) {
             
@@ -62,8 +64,7 @@
             
             [[NSNotificationCenter defaultCenter] postNotificationName:@"finishData" object:nil];
         });
-        
-        
+ 
         NSLog(@"请求成功");
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"请求失败");

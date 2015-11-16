@@ -29,7 +29,7 @@
     
     FriendsViewController *friendVC = [[FriendsViewController alloc] init];
     UINavigationController *friendNC = [[UINavigationController alloc] initWithRootViewController:friendVC];
-    friendNC.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"好友" image:[UIImage imageNamed:@"iconfont-pengyouquan"] selectedImage:[UIImage imageNamed:@""]];
+    friendNC.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"附近网吧" image:[UIImage imageNamed:@"iconfont-pengyouquan"] selectedImage:[UIImage imageNamed:@""]];
     
     FindTableViewController *findVC = [[FindTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
     UINavigationController *findNC = [[UINavigationController alloc] initWithRootViewController:findVC];

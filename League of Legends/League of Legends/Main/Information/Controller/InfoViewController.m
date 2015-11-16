@@ -17,6 +17,8 @@
 #import "TimeHandle.h"
 #import <MJRefresh.h>
 #import <MJRefreshHeader.h>
+#import "AFNetworking.h"
+
 
 #define kWidth (self.iv.bounds.size.width - 50) / 5
 
@@ -40,6 +42,9 @@
 //用于存储目前取到的tableView
 @property (strong, nonatomic) UITableView *tableView;
 
+//推荐资讯数据源
+@property (strong, nonatomic) NSMutableArray *dataArray;
+
 @end
 
 @implementation InfoViewController
@@ -58,10 +63,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    
-//    self.iv = [[InfoView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
-//    [self.view addSubview:self.iv];
-//    
+   
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"iconfont-next-2"] style:UIBarButtonItemStyleDone target:self action:@selector(rightBarButtonItemAction:)];
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     
@@ -70,18 +72,28 @@
     self.iv.infoTableView.delegate = self;
     self.iv.infoTableView.dataSource = self;
     
+    [self getJsonData];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishAction) name:@"finishData" object:nil];
     
     self.iv.allScrollView.delegate = self;
     
     //轮播图实现
-//    UITableView *tabView = (UITableView *)[self.iv.allScrollView viewWithTag:1000];
-//    self.recommendView = [[RecommendView alloc] initWithFrame:CGRectMake(0, 0, self.iv.allScrollView.bounds.size.width, 200)];
-////    self.iv.allScrollView.
-////    NSLog(@"%@", self.recommendView);
-//    tabView.tableHeaderView = self.recommendView;
-//    NSLog(@"%@", tabView);
+    self.recommendView = [[RecommendView alloc] initWithFrame:CGRectMake(0, 0, self.iv.allScrollView.bounds.size.width, 200)];
+
+    self.iv.infoTableView.tableHeaderView = self.recommendView;
+    
+    for (int i = 0; i < self.dataArray.count; i++) {
+        
+        InfoModel *model = self.dataArray[i];
+        
+        UIImageView *imageView =(UIImageView *) [self.recommendView viewWithTag:i+10];
+        [imageView sd_setImageWithURL:[NSURL URLWithString:model.image_url_big]];
+        
+        UILabel *label = (UILabel *)[self.recommendView viewWithTag:i];
+        label.text = model.title;
+        
+    }
     
     //资讯导航条
     [self p_setupHeadTitle];
@@ -255,6 +267,8 @@
     self.button = (UIButton *)[self.headTitleSV viewWithTag:index + 100];
     
     [self buttonAction:self.button];
+    
+    [self finishAction];
 
 }
 
@@ -265,6 +279,78 @@
 {
     NSLog(@"123");
 }
+
+
+#pragma mark -- 推荐资讯数据
+
+- (NSMutableArray *)dataArray{
+    if (_dataArray == nil) {
+        
+        self.dataArray = [NSMutableArray array];
+    }
+    return _dataArray;
+}
+
+-  (void)getJsonData
+{
+    NSString *urlString = @"http://qt.qq.com/static/pages/news/phone/c13_list_1.shtml";
+    
+//    self.dataArray = [NSMutableArray array];
+    
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+        NSLog(@"推荐请求数据成功");
+        
+        if (responseObject != nil) {
+            
+            for (NSDictionary *dic in responseObject[@"list"]) {
+                
+                InfoModel *info = [[InfoModel alloc] init];
+                
+                [info setValuesForKeysWithDictionary:dic];
+                
+                [self.dataArray addObject:info];
+            }
+        }
+    
+        
+        self.recommendView = [[RecommendView alloc] initWithFrame:CGRectMake(0, 0, self.iv.allScrollView.bounds.size.width, 200)];
+        
+        InfoModel *model3 = self.dataArray[self.dataArray.count-1];
+        
+        UIImageView *imageView3 = (UIImageView *)[self.recommendView viewWithTag:10];
+        [imageView3 sd_setImageWithURL:[NSURL URLWithString:model3.image_url_big]];
+        
+        self.iv.infoTableView.tableHeaderView = self.recommendView;
+        
+        for (int i = 0; i < self.dataArray.count; i++) {
+            
+            InfoModel *model = self.dataArray[i];
+            
+            UIImageView *imageView =(UIImageView *) [self.recommendView viewWithTag:i+10+1];
+            [imageView sd_setImageWithURL:[NSURL URLWithString:model.image_url_big]];
+            
+            UILabel *label = (UILabel *)[self.recommendView.Headlabel viewWithTag:i+1];
+            label.text = model.title;
+//            NSLog(@"%@", model.title);
+            
+        }
+        InfoModel *model2 = self.dataArray[0];
+
+        UIImageView *imageView2 = (UIImageView *)[self.recommendView viewWithTag:15];
+        [imageView2 sd_setImageWithURL:[NSURL URLWithString:model2.image_url_big]];
+        
+//        NSLog(@"tuijian :%@", self.dataArray);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+        NSLog(@"推荐数据请求失败");
+    }];
+    
+    
+    
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
