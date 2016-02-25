@@ -1,2 +1,1 @@
-# MyProject_First
-项目期一（掌上英雄联盟）实现功能：资讯页面数据请求、关于时间间隔的封装、自定义视图实现上方三个按钮、headArray的数据在tableView的返回行数中才能得到，model取值是在cell中实现
+掌上英雄联盟娱乐   实现功能：资讯页面数据请求、关于时间间隔的封装、自定义视图实现上方三个按钮、headArray的数据在tableView的返回行数中才能得到，model取值是在cell中实现
